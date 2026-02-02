@@ -1,0 +1,224 @@
+package CompressionAlgorithms;
+
+import DataStructure.BitTree;
+
+import java.io.*;
+
+
+public class HuffmanCompression {
+    //COMPRESSION
+    /**
+     * This method will compress the file
+     */
+    public static void compress(BufferedInputStream br, File compressWrite) throws IOException {
+        byte[]bytes=br.readAllBytes();//reads all the bytes from the file and exhausts the pointer, so we can do multiple reads without worrying about file ptr
+        BitTree.MapTree mapTree=BitTree.bitCompressionMap(bytes);
+        try(BitWriter writer=new BitWriter(compressWrite);ByteArrayOutputStream bos=new ByteArrayOutputStream();
+        BitWriter temp=new BitWriter(new BufferedOutputStream(bos));){
+            int originalFileSize=bytes.length;
+            int size=writeCompressed(mapTree.tree,temp);//write tree first
+            temp.close();//flush remaining bytes if any
+            byte[]huffmanTree=bos.toByteArray();
+            BitReader treeReader=new BitReader(new ByteArrayInputStream(huffmanTree));
+            writer.writeInt(originalFileSize);
+            writer.writeInt(size);
+            for(int i=0;i<size;i++){
+                writer.writeBit(treeReader.readBit());
+            }
+            for(byte b:bytes){
+                writer.writeByte(mapTree.map.get(b));
+            }
+        }
+        System.out.println("Completed Writing to: "+compressWrite);
+    }
+    public static int writeCompressed(BitTree tree, BitWriter writer) throws IOException {
+        if(tree.isLeaf()){
+            writer.writeBit(1);
+            writer.writeByte(tree.getValue());
+            return 9;
+        }
+        writer.writeBit(0);
+        return 1+writeCompressed(tree.left,writer)+writeCompressed(tree.right,writer);
+    }
+    //Extraction
+
+    public static void main(String[] args) throws IOException {
+        HuffmanCompression.compress(
+                new BufferedInputStream(
+                        new FileInputStream("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\test.txt"))
+                ,new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\compressed.hf"));
+        HuffmanCompression.compress(
+                new BufferedInputStream(
+                        new FileInputStream("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\test.txt"))
+                ,new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\compressed.hf"));
+    }
+}
+
+package CompressionAlgorithms;
+
+import DataStructure.BitTree;
+
+import java.io.*;
+
+
+public class HuffmanCompression {
+    //COMPRESSION
+    /**
+     * This method will compress the file
+     */
+    public static void compress(BufferedInputStream br, File compressWrite) throws IOException {
+        byte[]bytes=br.readAllBytes();//reads all the bytes from the file and exhausts the pointer, so we can do multiple reads without worrying about file ptr
+        BitTree.MapTree mapTree=BitTree.bitCompressionMap(bytes);
+        try(BitWriter writer=new BitWriter(compressWrite);ByteArrayOutputStream bos=new ByteArrayOutputStream();
+        BitWriter temp=new BitWriter(new BufferedOutputStream(bos));){
+            int originalFileSize=bytes.length;
+            int size=writeCompressed(mapTree.tree,temp);//write tree first
+            temp.close();//flush remaining bytes if any
+            byte[]huffmanTree=bos.toByteArray();
+            BitReader treeReader=new BitReader(new ByteArrayInputStream(huffmanTree));
+            writer.writeInt(originalFileSize);
+            writer.writeInt(size);
+            for(int i=0;i<size;i++){
+                writer.writeBit(treeReader.readBit());
+            }
+            for(byte b:bytes){
+                writer.writeByte(mapTree.map.get(b));
+            }
+        }
+        System.out.println("Completed Writing to: "+compressWrite);
+    }
+    public static int writeCompressed(BitTree tree, BitWriter writer) throws IOException {
+        if(tree.isLeaf()){
+            writer.writeBit(1);
+            writer.writeByte(tree.getValue());
+            return 9;
+        }
+        writer.writeBit(0);
+        return 1+writeCompressed(tree.left,writer)+writeCompressed(tree.right,writer);
+    }
+    //Extraction
+
+    public static void main(String[] args) throws IOException {
+        HuffmanCompression.compress(
+                new BufferedInputStream(
+                        new FileInputStream("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\test.txt"))
+                ,new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\compressed.hf"));
+        HuffmanCompression.compress(
+                new BufferedInputStream(
+                        new FileInputStream("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\test.txt"))
+                ,new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\compressed.hf"));
+    }
+}
+
+package CompressionAlgorithms;
+
+import DataStructure.BitTree;
+
+import java.io.*;
+
+
+public class HuffmanCompression {
+    //COMPRESSION
+    /**
+     * This method will compress the file
+     */
+    public static void compress(BufferedInputStream br, File compressWrite) throws IOException {
+        byte[]bytes=br.readAllBytes();//reads all the bytes from the file and exhausts the pointer, so we can do multiple reads without worrying about file ptr
+        BitTree.MapTree mapTree=BitTree.bitCompressionMap(bytes);
+        try(BitWriter writer=new BitWriter(compressWrite);ByteArrayOutputStream bos=new ByteArrayOutputStream();
+        BitWriter temp=new BitWriter(new BufferedOutputStream(bos));){
+            int originalFileSize=bytes.length;
+            int size=writeCompressed(mapTree.tree,temp);//write tree first
+            temp.close();//flush remaining bytes if any
+            byte[]huffmanTree=bos.toByteArray();
+            BitReader treeReader=new BitReader(new ByteArrayInputStream(huffmanTree));
+            writer.writeInt(originalFileSize);
+            writer.writeInt(size);
+            for(int i=0;i<size;i++){
+                writer.writeBit(treeReader.readBit());
+            }
+            for(byte b:bytes){
+                writer.writeByte(mapTree.map.get(b));
+            }
+        }
+        System.out.println("Completed Writing to: "+compressWrite);
+    }
+    public static int writeCompressed(BitTree tree, BitWriter writer) throws IOException {
+        if(tree.isLeaf()){
+            writer.writeBit(1);
+            writer.writeByte(tree.getValue());
+            return 9;
+        }
+        writer.writeBit(0);
+        return 1+writeCompressed(tree.left,writer)+writeCompressed(tree.right,writer);
+    }
+    //Extraction
+
+    public static void main(String[] args) throws IOException {
+        HuffmanCompression.compress(
+                new BufferedInputStream(
+                        new FileInputStream("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\test.txt"))
+                ,new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\compressed.hf"));
+        HuffmanCompression.compress(
+                new BufferedInputStream(
+                        new FileInputStream("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\test.txt"))
+                ,new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\compressed.hf"));
+    }
+}
+
+package CompressionAlgorithms;
+
+import DataStructure.BitTree;
+
+import java.io.*;
+
+
+public class HuffmanCompression {
+    //COMPRESSION
+    /**
+     * This method will compress the file
+     */
+    public static void compress(BufferedInputStream br, File compressWrite) throws IOException {
+        byte[]bytes=br.readAllBytes();//reads all the bytes from the file and exhausts the pointer, so we can do multiple reads without worrying about file ptr
+        BitTree.MapTree mapTree=BitTree.bitCompressionMap(bytes);
+        try(BitWriter writer=new BitWriter(compressWrite);ByteArrayOutputStream bos=new ByteArrayOutputStream();
+        BitWriter temp=new BitWriter(new BufferedOutputStream(bos));){
+            int originalFileSize=bytes.length;
+            int size=writeCompressed(mapTree.tree,temp);//write tree first
+            temp.close();//flush remaining bytes if any
+            byte[]huffmanTree=bos.toByteArray();
+            BitReader treeReader=new BitReader(new ByteArrayInputStream(huffmanTree));
+            writer.writeInt(originalFileSize);
+            writer.writeInt(size);
+            for(int i=0;i<size;i++){
+                writer.writeBit(treeReader.readBit());
+            }
+            for(byte b:bytes){
+                writer.writeByte(mapTree.map.get(b));
+            }
+        }
+        System.out.println("Completed Writing to: "+compressWrite);
+    }
+    public static int writeCompressed(BitTree tree, BitWriter writer) throws IOException {
+        if(tree.isLeaf()){
+            writer.writeBit(1);
+            writer.writeByte(tree.getValue());
+            return 9;
+        }
+        writer.writeBit(0);
+        return 1+writeCompressed(tree.left,writer)+writeCompressed(tree.right,writer);
+    }
+    //Extraction
+
+    public static void main(String[] args) throws IOException {
+        HuffmanCompression.compress(
+                new BufferedInputStream(
+                        new FileInputStream("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\test.txt"))
+                ,new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\compressed.hf"));
+        HuffmanCompression.compress(
+                new BufferedInputStream(
+                        new FileInputStream("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\test.txt"))
+                ,new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\compressed.hf"));
+    }
+}
+

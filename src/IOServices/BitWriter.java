@@ -1,4 +1,4 @@
-package CompressionAlgorithms;
+package IOServices;
 
 import DataStructure.HuffmanCodes;
 

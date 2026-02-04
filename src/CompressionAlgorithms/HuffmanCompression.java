@@ -1,11 +1,11 @@
 package CompressionAlgorithms;
 
 import DataStructure.BitTree;
-import DataStructure.HuffmanCodes;
+import IOServices.BitReader;
+import IOServices.BitWriter;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 
 public class HuffmanCompression {

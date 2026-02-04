@@ -12,7 +12,7 @@ import java.util.*;
 public class BitTree{
     private Byte val;
     private Integer freq;
-    public BitTree left,right;
+    public BitTree left,right;//Binary Tree With each node storing val,freq
     public BitTree(Byte val, Integer freq){
         this.val = val;
         this.freq = freq;
@@ -24,23 +24,26 @@ public class BitTree{
         return freq;
     }
     public static BitTree buildTree(File readFrom) throws IOException {
+        //build tree by using huffman construction with priority queue
         Map<Byte,Integer> map = new HashMap<>();
         BufferedInputStream bis = new BufferedInputStream(new FileInputStream(readFrom));
         int  x;
+        //while  input file byte !=-1 we can read it and increase byte count by 1
         while( (x= bis.read())!=-1) {
             byte b=(byte)x;
             if(!map.containsKey(b)) map.put(b, 0);
             map.put(b, map.get(b) + 1);
         }
+        //minheap by frequency per node
         PriorityQueue<BitTree> pq=new PriorityQueue<>(Comparator.comparingInt(BitTree::getFrequency));
         for(Map.Entry<Byte,Integer> entry:map.entrySet()) pq.add(new BitTree(entry.getKey(),entry.getValue()));
-        if (pq.size() == 1) {
+        if (pq.size() == 1) {//only one bit is repeated
             BitTree only = pq.poll();
             BitTree parent = new BitTree(null, only.freq);
             parent.left = only;
             return parent;
         }
-        while(pq.size()>1){
+        while(pq.size()>1){//pop 2 smallest element and add a parent
             BitTree smallest=pq.poll(),nextSmallest=pq.poll();
             BitTree parent=new BitTree(null,smallest.getFrequency()+nextSmallest.getFrequency());
             parent.left=nextSmallest;parent.right=smallest;
@@ -49,18 +52,19 @@ public class BitTree{
         return pq.poll();
     }
     public static MapTree bitCompressionMap(File readFrom) throws IOException{
+        //builds the huffman tree and then builds the hashmap with huffman bit code
         BitTree tree=BitTree.buildTree(readFrom);
         System.out.println(tree);
         return new MapTree(tree,buildMap(tree));
     }
     public static Map<Byte,HuffmanCodes> buildMap(BitTree tree){
         Map<Byte,HuffmanCodes> map=new HashMap<>();
-        dfs(tree,map,new BitSet(),0);
+        dfs(tree,map,new BitSet(),0);//do bfs to get bit representation for each leaf
         return map;
     }
     private static void dfs(BitTree root, Map<Byte, HuffmanCodes> map, BitSet compressedForm, int bitPos){
         if(root==null) return;
-        if(root.isLeaf()){
+        if(root.isLeaf()){//if root is a leaf then push the bitset representation along with position of MSB
             map.put(root.getValue(),new HuffmanCodes((BitSet) compressedForm.clone(),bitPos));
             return;
         }
@@ -80,7 +84,7 @@ public class BitTree{
         printTree(this, sb, 0);
         return sb.toString();
     }
-
+    //prints tree rotated 90 degrees anti-clockwise
     private void printTree(BitTree node, StringBuilder sb, int depth) {
         if (node == null) return;
         printTree(node.right, sb, depth + 1);
@@ -91,6 +95,7 @@ public class BitTree{
             sb.append(node.val).append(":").append(node.freq).append("\n");
         printTree(node.left, sb, depth + 1);
     }
+    //return type to return the tree and huffman map
     public static class MapTree{
         public BitTree tree;
         public Map<Byte,HuffmanCodes>map;

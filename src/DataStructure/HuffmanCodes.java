@@ -2,7 +2,7 @@ package DataStructure;
 
 import java.util.BitSet;
 
-public class HuffmanCodes {
+public class HuffmanCodes {//stores the bitset along with position of MSB
     private final BitSet bits;
     private final int length;
     public HuffmanCodes(BitSet bits, int length){

@@ -8,7 +8,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 
-public class HuffmanCompression {
+public class FileCompression {
     //COMPRESSION
     /**
      * This method will compress the file
@@ -76,26 +76,27 @@ public class HuffmanCompression {
     public static void extract(File compressedFile) throws IOException {
         System.out.println("Extracting from: "+compressedFile);
         try(BitReader reader=new BitReader(compressedFile)){
-            int fileNameSize=reader.readInt();
+            int fileNameSize=reader.readInt();//read file name size to store the file name as bytes
             System.out.println("Name Size: "+fileNameSize);
             byte[]name=new byte[fileNameSize];
             for(int i=0;i<fileNameSize;i++){
                 name[i]=reader.readByte();
             }
-            String fileName=new String(name,StandardCharsets.UTF_8);
-            int originalFileSize= reader.readInt();
-            int treeSize=reader.readInt();
+            String fileName=new String(name,StandardCharsets.UTF_8);//converts the byte array to corresponding string
+            int originalFileSize= reader.readInt();//read the next 4bytes to get file  size
+            int treeSize=reader.readInt();//next 4 have tree size
             System.out.printf("Original File Size: %d. Tree Size: %d\n", originalFileSize, treeSize);
-            BitTree tree=rebuildTree(reader);
+            BitTree tree=rebuildTree(reader);//build  huffman tree from the bits in the file
             System.out.println("Extracted file: ");
             System.out.println(fileName);
             try(BitWriter outputWriter=new BitWriter(new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\extracted_"+fileName));){
                 int b;
-                BitTree root=tree;
-                while((b=reader.readBit())!=-1){
-                    if((b&1)==0) root=root.left;
-                    else root=root.right;
+                BitTree root=tree;//assigns active node to root
+                while((b=reader.readBit())!=-1){//reads next byte
+                    if((b&1)==0) root=root.left;//if current bit is 0, go to left of tree
+                    else root=root.right;//else go right
                     if(root.isLeaf()){
+                        //once you reach leaf of tree, write that byte which corresponds to it and reassign root to root of tree
                         outputWriter.writeByte(root.getValue());
                         root=tree;
                     }
@@ -117,14 +118,14 @@ public class HuffmanCompression {
         return parent;
     }
     public static void main(String[] args) throws IOException {
-        HuffmanCompression.compress(
+        FileCompression.compress(
                 new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\test.txt")
                 ,"D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\compressed");
-        HuffmanCompression.compress(
+        FileCompression.compress(
                 new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\bigFile.txt")
                 ,"D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\bigCompressed");
-        HuffmanCompression.extract(new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\compressed.hf"));
-        HuffmanCompression.extract(new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\bigCompressed.hf"));
+        FileCompression.extract(new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\compressed.hf"));
+        FileCompression.extract(new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\bigCompressed.hf"));
          }
 }
 

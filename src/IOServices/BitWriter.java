@@ -14,6 +14,7 @@ public class BitWriter implements AutoCloseable {
     public BitWriter(File filePath) throws FileNotFoundException {
         this.bos= new BufferedOutputStream(new FileOutputStream(filePath));
     }
+    //only writes bits if bits filled in the current byte=8
     public void writeBit(int bit) throws IOException {
         this.currentByte= (byte) ((this.currentByte<<1)|bit);
         this.numBitsFilled++;
@@ -23,17 +24,20 @@ public class BitWriter implements AutoCloseable {
             numBitsFilled=0;
         }
     }
+    //calls writebit 8 times to write the byte value
     public void writeByte(int b) throws IOException {
         for(int i=7;i>=0;i--){
             writeBit((byte)((b>>i)&1));
         }
     }
+    //overloaded writebyte to get bits from huffman code
     public void writeByte(HuffmanCodes codes) throws IOException {
         int length=codes.getLength();
         for(int i=0;i<length;i++){
             writeBit((codes.getBits().get(i)?1:0)&1);
         }
     }
+    //overloaded writeint that calls writebyte 4 times
     public void writeInt(int num)throws IOException {
         for(int i=3;i>=0;i--){
             this.writeByte((num>>(i*8))&0xFF);//will write first the 25-32 byte then 17-24 then 9-16 then 1-8 bytes
@@ -41,6 +45,7 @@ public class BitWriter implements AutoCloseable {
     }
     @Override
     public void close() throws IOException {
+        // to provide autocloseable services for try-with usage, flushes remaining bytes to file
         if(this.numBitsFilled>0){
             currentByte<<=(8-this.numBitsFilled);
             bos.write(currentByte);

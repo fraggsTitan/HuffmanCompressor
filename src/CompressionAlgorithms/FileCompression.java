@@ -1,6 +1,7 @@
 package CompressionAlgorithms;
 
 import DataStructure.BitTree;
+import Exceptions.NotAFileException;
 import IOServices.BitReader;
 import IOServices.BitWriter;
 
@@ -21,6 +22,7 @@ public class FileCompression {
      * data bits
      */
     public static void compress(File inputFile, String compressedName) throws IOException {
+        if(!inputFile.isFile())throw new  NotAFileException(inputFile.getName()+" is not a file");
         File compressWrite=new File(compressedName+".hf");//need to write to a  custom compressed file
         BitTree.MapTree mapTree=BitTree.bitCompressionMap(inputFile);
         //Runs compression algorithm and returns an object containing hoffman tree and the mapping of bit to code
@@ -74,6 +76,8 @@ public class FileCompression {
     * read next k bytes for tree and reconstruct it
     * */
     public static void extract(File compressedFile) throws IOException {
+        if(!compressedFile.toString().endsWith(".hf"))
+            throw new NotAFileException("The given file "+compressedFile+" is not a file but a directory, try extracting as a directory instead");
         System.out.println("Extracting from: "+compressedFile);
         try(BitReader reader=new BitReader(compressedFile)){
             int fileNameSize=reader.readInt();//read file name size to store the file name as bytes
@@ -92,17 +96,19 @@ public class FileCompression {
             try(BitWriter outputWriter=new BitWriter(new File("D:\\IntelliJWorkspace\\HuffmanCompressor\\src\\testInputs\\extracted_"+fileName));){
                 int b;
                 BitTree root=tree;//assigns active node to root
-                while((b=reader.readBit())!=-1){//reads next byte
+                int writtenBytes=0;
+                while(writtenBytes<originalFileSize){
+                    b=reader.readBit();
                     if((b&1)==0) root=root.left;//if current bit is 0, go to left of tree
                     else root=root.right;//else go right
                     if(root.isLeaf()){
                         //once you reach leaf of tree, write that byte which corresponds to it and reassign root to root of tree
                         outputWriter.writeByte(root.getValue());
+                        writtenBytes++;
                         root=tree;
                     }
                 }
             }
-
             System.out.println("Extracted file t: extracted_"+fileName);
         }
     }

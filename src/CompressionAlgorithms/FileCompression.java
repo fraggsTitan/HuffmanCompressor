@@ -21,6 +21,7 @@ public class FileCompression {
      * tree bits
      * data bits
      */
+    //TO-DO REWRITE THIS COMPRESSION AND EXTRACTION FULLY WITH RANDOM-ACCESS FILE
     public static void compress(File inputFile, String compressedName) throws IOException {
         if(!inputFile.isFile())throw new  NotAFileException(inputFile.getName()+" is not a file");
         File compressWrite=new File(compressedName+".hf");//need to write to a  custom compressed file
